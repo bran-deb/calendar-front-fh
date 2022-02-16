@@ -25,6 +25,14 @@ const nowPlus1 = now.clone().add(1, 'hours')                //fecha 1 hora difer
 export const CalendarModal = () => {
     const [dateStart, setDateStart] = useState(now.toDate())
     const [dateEnd, setDateEnd] = useState(nowPlus1.toDate())
+    const [formValues, setFormValues] = useState({
+        title: 'Evento',
+        notes: '',
+        start: now.toDate(),
+        end: nowPlus1.toDate(),
+    })
+
+    const { title, notes } = formValues
 
     const closeModal = () => {
         //TODO: dispatch del modal
@@ -32,12 +40,28 @@ export const CalendarModal = () => {
     //optiene la fecha de inicio seleccionada
     const handleStartDateChange = (e) => {
         setDateStart(e)
-        console.log(e);
+        setFormValues({
+            ...formValues,
+            start: e
+        })
     }
     //optiene la fecha final seleccionada
     const handleEndDateChange = (e) => {
         setDateEnd(e)
-        console.log(e)
+        setFormValues({
+            ...formValues,
+            end: e
+        })
+    }
+    const handleImputChange = ({ target }) => {
+        setFormValues({
+            ...formValues,
+            [target.name]: target.value
+        })
+    }
+    const handleSubmitForm = (e) => {
+        e.preventDefault()
+        console.log(formValues);
     }
 
     return (
@@ -53,7 +77,10 @@ export const CalendarModal = () => {
             {/* mensaje del modal */}
             <h1> Nuevo evento </h1>
             <hr />
-            <form className="container">
+            <form
+                onSubmit={handleSubmitForm}
+                className="container"
+            >
 
                 <div className="form-group">
                     <label>Fecha y hora inicio</label>
@@ -81,8 +108,10 @@ export const CalendarModal = () => {
                         type="text"
                         className="form-control"
                         placeholder="Título del evento"
-                        name="title"
                         autoComplete="off"
+                        name="title"
+                        value={title}
+                        onChange={handleImputChange}
                     />
                     <small
                         id="emailHelp"
@@ -97,6 +126,8 @@ export const CalendarModal = () => {
                         placeholder="Notas"
                         rows="5"
                         name="notes"
+                        value={notes}
+                        onChange={handleImputChange}
                     >
                     </textarea>
                     <small
