@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 
 import moment from 'moment';
@@ -7,7 +7,7 @@ import DateTimePicker from 'react-datetime-picker';
 import Swal from 'sweetalert2';
 
 import { uiCloseModal } from '../../store/actions/ui';
-import { eventAddNew } from '../../store/actions/events';
+import { eventAddNew, eventClearActiveNote } from '../../store/actions/events';
 
 
 const customStyles = {
@@ -25,23 +25,33 @@ Modal.setAppElement('#root')
 const now = moment().minutes(0).seconds(0).add(1, 'hours') //3:00:00
 // const end = moment().minutes(0).seconds(0).add(2, 'hours')
 const nowPlus1 = now.clone().add(1, 'hours')                //fecha 1 hora diferencia
+const initEvent = {
+    title: '',
+    notes: '',
+    start: now.toDate(),
+    end: nowPlus1.toDate(),
+}
 
 
 export const CalendarModal = () => {
     const dispatch = useDispatch()
 
     const { modalOpen } = useSelector(state => state.ui)
+    const { activeEvent } = useSelector(state => state.calendar)
 
     const [dateStart, setDateStart] = useState(now.toDate())
     const [dateEnd, setDateEnd] = useState(nowPlus1.toDate())
     const [titleValid, setTitleValid] = useState(true)
-    const [formValues, setFormValues] = useState({
-        title: 'Evento',
-        notes: '',
-        start: now.toDate(),
-        end: nowPlus1.toDate(),
-    })
+    const [formValues, setFormValues] = useState(initEvent)
     const { title, notes, start, end } = formValues
+
+    useEffect(() => {
+        // si hay un evento activo carga la data
+        if (activeEvent) {
+            setFormValues(activeEvent)
+        }
+    }, [activeEvent])
+
 
     const handleImputChange = ({ target }) => {
         setFormValues({
@@ -51,6 +61,8 @@ export const CalendarModal = () => {
     }
     const closeModal = () => {
         dispatch(uiCloseModal())
+        dispatch(eventClearActiveNote())
+        setFormValues(initEvent)
     }
     //optiene la fecha de inicio seleccionada
     const handleStartDateChange = (e) => {
