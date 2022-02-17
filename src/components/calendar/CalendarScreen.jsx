@@ -11,6 +11,8 @@ import { uiOpenModal } from '../../store/actions/ui'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'moment/locale/es'
+import { eventSetActive } from '../../store/actions/events'
+import { AddNewFab } from '../ui/AddNewFab'
 
 
 //cambia idioma a español
@@ -35,13 +37,13 @@ export const CalendarScreen = () => {
     const dispatch = useDispatch()
 
     const [lastView, setLastView] = useState(localStorage.getItem('lastView') || 'month')
-
+    //abre modal
     const onDoubleClick = (e) => {
-        console.log('abrir el modal');
         dispatch(uiOpenModal())
     }
-    const onSelect = (e) => {
-        console.log(e)
+    const onSelectEvent = (e) => {
+        dispatch(eventSetActive(e))
+        // dispatch(uiOpenModal())
     }
     const onViewChange = (e) => {
         setLastView(e)
@@ -75,13 +77,14 @@ export const CalendarScreen = () => {
                 messages={messages}         //idioma mensajes es
                 eventPropGetter={eventStyleGetter}
                 onDoubleClickEvent={onDoubleClick}
-                onSelectEvent={onSelect}
+                onSelectEvent={onSelectEvent}
                 onView={onViewChange}       //retorna nombre vista
                 view={lastView}             //vista actual
                 components={{
                     event: CalendarEvent    //muestra nombre y title de event
                 }}
             />
+            <AddNewFab />
             <CalendarModal />
         </div>
     )
