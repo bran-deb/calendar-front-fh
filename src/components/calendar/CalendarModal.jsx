@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import moment from 'moment';
 import Modal from 'react-modal'
 import DateTimePicker from 'react-datetime-picker';
+import Swal from 'sweetalert2';
 
 
 const customStyles = {
@@ -25,19 +26,56 @@ const nowPlus1 = now.clone().add(1, 'hours')                //fecha 1 hora difer
 export const CalendarModal = () => {
     const [dateStart, setDateStart] = useState(now.toDate())
     const [dateEnd, setDateEnd] = useState(nowPlus1.toDate())
+    const [titleValid, setTitleValid] = useState(true)
+    const [formValues, setFormValues] = useState({
+        title: 'Evento',
+        notes: '',
+        start: now.toDate(),
+        end: nowPlus1.toDate(),
+    })
+    const { title, notes, start, end } = formValues
 
+    const handleImputChange = ({ target }) => {
+        setFormValues({
+            ...formValues,
+            [target.name]: target.value
+        })
+    }
     const closeModal = () => {
         //TODO: dispatch del modal
     }
     //optiene la fecha de inicio seleccionada
     const handleStartDateChange = (e) => {
         setDateStart(e)
-        console.log(e);
+        setFormValues({
+            ...formValues,
+            start: e
+        })
     }
     //optiene la fecha final seleccionada
     const handleEndDateChange = (e) => {
         setDateEnd(e)
-        console.log(e)
+        setFormValues({
+            ...formValues,
+            end: e
+        })
+    }
+    const handleSubmitForm = (e) => {
+        e.preventDefault()
+
+        const momentStart = moment(start)
+        const moementEnd = moment(end)
+        //si la fecha start es igual o esta despues de end es un error
+        if (momentStart.isSameOrAfter(moementEnd)) {    //isSameOrAfter function moment
+            return Swal.fire('Error', 'La fecha fin debe de ser mayor a la fecha de inicio', 'error')
+        }
+        if (title.trim().length < 3) {
+            return setTitleValid(false)
+        }
+
+        //TODO: realizar grabacion
+        setTitleValid(true)
+        closeModal()
     }
 
     return (
@@ -53,7 +91,10 @@ export const CalendarModal = () => {
             {/* mensaje del modal */}
             <h1> Nuevo evento </h1>
             <hr />
-            <form className="container">
+            <form
+                onSubmit={handleSubmitForm}
+                className="container"
+            >
 
                 <div className="form-group">
                     <label>Fecha y hora inicio</label>
@@ -79,10 +120,12 @@ export const CalendarModal = () => {
                     <label>Titulo y notas</label>
                     <input
                         type="text"
-                        className="form-control"
+                        className={`form-control ${!titleValid && 'is-invalid'}`}
                         placeholder="Título del evento"
-                        name="title"
                         autoComplete="off"
+                        name="title"
+                        value={title}
+                        onChange={handleImputChange}
                     />
                     <small
                         id="emailHelp"
@@ -97,6 +140,8 @@ export const CalendarModal = () => {
                         placeholder="Notas"
                         rows="5"
                         name="notes"
+                        value={notes}
+                        onChange={handleImputChange}
                     >
                     </textarea>
                     <small
