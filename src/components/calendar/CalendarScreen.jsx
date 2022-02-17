@@ -8,8 +8,9 @@ import { messages } from '../../helpers/calendar-messages-es'
 import { CalendarEvent } from './CalendarEvent'
 import { CalendarModal } from './CalendarModal'
 import { uiOpenModal } from '../../store/actions/ui'
-import { eventSetActive } from '../../store/actions/events'
+import { eventClearActiveNote, eventSetActive } from '../../store/actions/events'
 import { AddNewFab } from '../ui/AddNewFab'
+import { DeleteEventFab } from '../ui/DeleteEventFab'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'moment/locale/es'
@@ -24,7 +25,7 @@ const localizer = momentLocalizer(moment)
 export const CalendarScreen = () => {
     const dispatch = useDispatch()
 
-    const { events } = useSelector(state => state.calendar)
+    const { events, activeEvent } = useSelector(state => state.calendar)
 
     const [lastView, setLastView] = useState(localStorage.getItem('lastView') || 'month')
     //abre modal
@@ -37,6 +38,10 @@ export const CalendarScreen = () => {
     const onViewChange = (e) => {
         setLastView(e)
         localStorage.setItem('lastView', e)
+    }//obtiene info de lo seleccionado
+    const onSelectSlot = (e) => {
+        console.log(e);
+        dispatch(eventClearActiveNote())
     }
 
     //personaliza eventos del calendar
@@ -67,12 +72,15 @@ export const CalendarScreen = () => {
                 eventPropGetter={eventStyleGetter}
                 onDoubleClickEvent={onDoubleClick}
                 onSelectEvent={onSelectEvent}
+                onSelectSlot={onSelectSlot}
+                selectable={true}
                 onView={onViewChange}       //retorna nombre vista
                 view={lastView}             //vista actual
                 components={{
                     event: CalendarEvent    //muestra nombre y title de event
                 }}
             />
+            {activeEvent && <DeleteEventFab />}
             <AddNewFab />
             <CalendarModal />
         </div>

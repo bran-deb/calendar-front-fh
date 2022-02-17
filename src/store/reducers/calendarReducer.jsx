@@ -49,6 +49,16 @@ export const calendarReducer = (state = initialState, action) => {
                         : event
                 )
             }
+        case types.EVENT_DELETED:
+            //filtra todos los eventos que tengan el id diferente a el evento actual
+            //actualiza activeEvent a null por que ya no existe
+            return {
+                ...state,
+                events: state.events.filter(
+                    event => (event.id !== state.activeEvent.id)
+                ),
+                activeEvent: null
+            }
         default:
             return state
     }

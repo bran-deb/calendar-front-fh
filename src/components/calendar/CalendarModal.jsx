@@ -49,6 +49,8 @@ export const CalendarModal = () => {
         // si hay un evento activo carga la data
         if (activeEvent) {
             setFormValues(activeEvent)
+        } else {
+            setFormValues(initEvent)
         }
     }, [activeEvent])
 
@@ -121,7 +123,11 @@ export const CalendarModal = () => {
             overlayClassName='modal-fondo'
         >
             {/* mensaje del modal */}
-            <h1> Nuevo evento </h1>
+            <h1> {
+                activeEvent
+                    ? 'Editar evento'
+                    : 'Nuevo Evento'
+            } </h1>
             <hr />
             <form
                 onSubmit={handleSubmitForm}
