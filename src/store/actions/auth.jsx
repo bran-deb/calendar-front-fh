@@ -1,6 +1,7 @@
 import Swal from "sweetalert2"
 import { fetchConToken, fetchSinToken } from "../../helpers/fetch"
 import { types } from "../types/types"
+import { eventLogout } from "./events"
 
 
 //action async session start
@@ -61,4 +62,16 @@ const checkingFinish = () => ({
 const login = (user) => ({
     type: types.AUTH_LOGIN,
     payload: user
+})
+
+export const startLogout = () => {
+    return async (dispatch) => {
+        localStorage.clear()
+        dispatch(eventLogout())
+        dispatch(logout())
+    }
+}
+
+const logout = () => ({
+    type: types.AUTH_LOGOUT
 })
