@@ -1,5 +1,5 @@
 import Swal from "sweetalert2"
-import { fetchSinToken } from "../../helpers/fetch"
+import { fetchConToken, fetchSinToken } from "../../helpers/fetch"
 import { types } from "../types/types"
 
 
@@ -27,7 +27,6 @@ export const startRegister = (name, email, password) => {
         const resp = await fetchSinToken('auth/new', { name, email, password }, 'POST')
         const body = await resp.json()
         const { uid, token } = body
-        console.log(body)
         //si es correcto guardamos en el localStorageel token y cuando fue creado
         if (body.ok) {
             localStorage.setItem('token', token)
@@ -38,6 +37,26 @@ export const startRegister = (name, email, password) => {
         }
     }
 }
+//mantiene el estado de autenticacion con el localstorage
+export const startChecking = () => {
+    return async (dispatch) => {
+        const resp = await fetchConToken('auth/renew', {})  //GET
+        const body = await resp.json()
+        const { name, uid, token } = body
+        //si es correcto guardamos en el localStorageel token y cuando fue creado
+        if (body.ok) {
+            localStorage.setItem('token', token)
+            localStorage.setItem('token-init-date', new Date().getTime())
+            dispatch(login({ uid, name }))
+        } else {
+            dispatch(checkingFinish())
+        }
+    }
+}
+
+const checkingFinish = () => ({
+    type: types.AUTH_CHECKING_FINISH
+})
 
 const login = (user) => ({
     type: types.AUTH_LOGIN,
