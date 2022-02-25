@@ -62,3 +62,14 @@ const login = (user) => ({
     type: types.AUTH_LOGIN,
     payload: user
 })
+
+export const startLogout = () => {
+    return async (dispatch) => {
+        localStorage.clear()
+        dispatch(logout())
+    }
+}
+
+const logout = () => ({
+    type: types.AUTH_LOGOUT
+})
