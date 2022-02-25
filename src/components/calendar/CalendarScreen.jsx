@@ -52,11 +52,6 @@ export const CalendarScreen = () => {
     //personaliza eventos del calendar
     const eventStyleGetter = (event, start, end, isSelected) => {
 
-        console.log(event)
-        if (uid === event.id) {
-
-        }
-
         const style = {
             backgroundColor: (uid === event.user._id) ? '#367CF7' : '#465660',
             borderRadius: '0px',
