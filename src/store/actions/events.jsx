@@ -36,7 +36,6 @@ export const eventSetActive = (event) => ({
     type: types.EVENT_SET_ACTIVE,
     payload: event
 })
-
 export const eventClearActiveNote = () => ({
     type: types.EVENT_CLEAR_ACTIVE_EVENT
 })
@@ -46,4 +45,27 @@ export const eventUpdated = (event) => ({
 })
 export const eventDeleted = () => ({
     type: types.EVENT_DELETED
+})
+
+//cargar lista de eventos desde la bd
+export const eventStartLoading = () => {
+    return async (dispatch) => {
+
+        try {
+            const resp = await fetchConToken('events', {})
+            const body = await resp.json()
+            const events = body.eventos     //obtiene la lista de eventos
+
+            console.log(events);
+            // dispatch(eventLoaded(events))
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+}
+
+const eventLoaded = (events) => ({
+    type: types.EVENT_LOADED,
+    payload: events
 })
